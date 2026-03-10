@@ -25,6 +25,7 @@ Follow the sections below to navigate through each phase of the process.
 2. **🔧 Set Up Your Environment**
    - Follow the [Getting Started](./docs/getting_started.md) guide to set up and validate your development environment.
    - Run the evaluation container and set up your local workspace with Pixi.
+   - **HPC / no Docker?** See [HPC Setup with Singularity](./docs/hpc_singularity_setup.md) to use Singularity instead of Docker and Distrobox.
 
 3. **💻 Develop Your Policy**
    - Explore the [Scene Description](./docs/scene_description.md) to learn how to customize and explore the environment.

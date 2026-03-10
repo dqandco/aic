@@ -20,6 +20,9 @@ For a detailed explanation of the architecture, packages, and interfaces, see th
 
 ## Requirements
 
+> [!NOTE]
+> **No Docker or root access?** If you're on an HPC cluster with only Singularity available, see [HPC Setup with Singularity](./hpc_singularity_setup.md) instead.
+
 **Minimum Compute Specifications:**
 
 - **OS:** Ubuntu 24.04
