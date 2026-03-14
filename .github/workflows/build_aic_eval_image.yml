@@ -42,7 +42,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           push: ${{ github.event.inputs.push }}
-          tags: ghcr.io/intrinsic-dev/aic/aic_eval:${{ github.event.inputs.tag }}
+          tags: ghcr.io/${{ github.repository_owner }}/aic/aic_eval:${{ github.event.inputs.tag }}
           file: ./docker/aic_eval/Dockerfile
           no-cache: true
 
