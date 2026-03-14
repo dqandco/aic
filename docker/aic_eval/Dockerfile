@@ -82,7 +82,7 @@ if should_enable_acl; then
 fi
 export ZENOH_CONFIG_OVERRIDE
 echo "ZENOH_CONFIG_OVERRIDE_PEER=$ZENOH_CONFIG_OVERRIDE"
-exec ros2 launch aic_bringup aic_gz_bringup.launch.py "$@"
+exec ros2 launch aic_bringup aic_gz_bringup.launch.py headless_rendering:=true "$@"
 EOF
 
 # Contary to the name, `/entrypoint.sh` is not actually the entrypoint.
