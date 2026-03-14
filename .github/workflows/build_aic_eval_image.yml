@@ -39,12 +39,23 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push aic_eval docker image
+        if: ${{ github.event.inputs.push == 'true' }}
         uses: docker/build-push-action@v6
         with:
-          push: ${{ github.event.inputs.push }}
-          tags: ghcr.io/dqandco/aic/aic_eval:${{ github.event.inputs.tag }}
+          push: true
+          tags: ghcr.io/${{ github.repository_owner }}/aic/aic_eval:${{ github.event.inputs.tag }}
           file: ./docker/aic_eval/Dockerfile
-          no-cache: true
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/aic/aic_eval:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/aic/aic_eval:buildcache,mode=max
+
+      - name: Build aic_eval docker image without push
+        if: ${{ github.event.inputs.push == 'false' }}
+        uses: docker/build-push-action@v6
+        with:
+          push: false
+          tags: ghcr.io/${{ github.repository_owner }}/aic/aic_eval:${{ github.event.inputs.tag }}
+          file: ./docker/aic_eval/Dockerfile
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/aic/aic_eval:buildcache
 
       - name: Cleanup workspace
         run: |
