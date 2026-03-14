@@ -44,7 +44,8 @@ jobs:
           push: ${{ github.event.inputs.push }}
           tags: ghcr.io/${{ github.repository_owner }}/aic/aic_eval:${{ github.event.inputs.tag }}
           file: ./docker/aic_eval/Dockerfile
-          no-cache: true
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/aic/aic_eval:buildcache
+          cache-to: type=registry,ref=user/app:buildcache,mode=max
 
       - name: Cleanup workspace
         run: |
