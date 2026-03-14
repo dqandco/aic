@@ -21,7 +21,7 @@ defaults:
 jobs:
   build-aic-eval-image:
     name: Build and Push AIC Eval Image
-    runs-on: [self-hosted, linux, x64]
+    runs-on: ubuntu-latest-8-cores
     permissions:
       packages: write
       contents: read
