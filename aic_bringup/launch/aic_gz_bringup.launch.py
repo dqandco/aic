@@ -15,11 +15,6 @@
 #
 
 
-import os
-
-from ament_index_python.packages import get_package_share_directory
-from catkin_pkg.package import InvalidPackage, parse_package
-from catkin_pkg.package import PACKAGE_MANIFEST_FILENAME
 from launch import LaunchDescription
 from launch.actions import (
     DeclareLaunchArgument,
@@ -47,53 +42,6 @@ from launch_ros.parameter_descriptions import ParameterValue
 from launch_ros.substitutions import FindPackageShare
 from ros_gz_bridge.actions import RosGzBridge
 from ros_gz_sim.actions import GzServer
-from ros2pkg.api import get_package_names
-
-
-def _get_gazebo_paths():
-    """Collect Gazebo model, plugin, and media paths from package exports."""
-    gazebo_model_path = []
-    gazebo_plugin_path = []
-    gazebo_media_path = []
-
-    for package_name in get_package_names():
-        try:
-            package_share_path = get_package_share_directory(package_name)
-        except Exception:
-            continue
-        package_file_path = os.path.join(
-            package_share_path, PACKAGE_MANIFEST_FILENAME
-        )
-        if not os.path.isfile(package_file_path):
-            continue
-        try:
-            package = parse_package(package_file_path)
-        except InvalidPackage:
-            continue
-        for export in package.exports:
-            if export.tagname == "gazebo_ros":
-                if "gazebo_model_path" in export.attributes:
-                    xml_path = export.attributes["gazebo_model_path"]
-                    xml_path = xml_path.replace("${prefix}", package_share_path)
-                    gazebo_model_path.append(xml_path)
-                if "plugin_path" in export.attributes:
-                    xml_path = export.attributes["plugin_path"]
-                    xml_path = xml_path.replace("${prefix}", package_share_path)
-                    gazebo_plugin_path.append(xml_path)
-                if "gazebo_media_path" in export.attributes:
-                    xml_path = export.attributes["gazebo_media_path"]
-                    xml_path = xml_path.replace("${prefix}", package_share_path)
-                    gazebo_media_path.append(xml_path)
-
-    model_paths = os.pathsep.join(gazebo_model_path + gazebo_media_path)
-    plugin_paths = os.pathsep.join(
-        [
-            os.environ.get("GZ_SIM_SYSTEM_PLUGIN_PATH", ""),
-            os.environ.get("LD_LIBRARY_PATH", ""),
-            os.pathsep.join(gazebo_plugin_path),
-        ]
-    )
-    return model_paths, plugin_paths
 
 
 def on_aic_engine_exit(event, context):
@@ -147,7 +95,6 @@ def launch_setup(context, *args, **kwargs):
     start_aic_engine = LaunchConfiguration("start_aic_engine")
     shutdown_on_aic_engine_exit = LaunchConfiguration("shutdown_on_aic_engine_exit")
     aic_engine_config_file = LaunchConfiguration("aic_engine_config_file")
-    headless_rendering = LaunchConfiguration("headless_rendering")
 
     gripper_initial_pos = "0.00655"
     cable_type_str = LaunchConfiguration("cable_type").perform(context)
@@ -383,30 +330,12 @@ def launch_setup(context, *args, **kwargs):
         ],
     )
 
-    headless_rendering_val = headless_rendering.perform(context) == "true"
-
-    if headless_rendering_val:
-        world_path = world_file.perform(context)
-        model_paths, plugin_paths = _get_gazebo_paths()
-        gz_headless_process = ExecuteProcess(
-            cmd=["gz", "sim", "-s", "-r", "--headless-rendering", world_path],
-            output="screen",
-            additional_env={
-                "GZ_SIM_SYSTEM_PLUGIN_PATH": plugin_paths,
-                "GZ_SIM_RESOURCE_PATH": model_paths,
-            },
-        )
-        gzserver_or_headless = gz_headless_process
-        ros_gz_bridge_create_own = True
-    else:
-        gzserver = GzServer(
-            world_sdf_file=world_file,
-            container_name="ros_gz_container",
-            create_own_container="True",
-            use_composition="True",
-        )
-        gzserver_or_headless = gzserver
-        ros_gz_bridge_create_own = False
+    gzserver = GzServer(
+        world_sdf_file=world_file,
+        container_name="ros_gz_container",
+        create_own_container="True",
+        use_composition="True",
+    )
 
     gzgui = ExecuteProcess(
         cmd=["gz", "sim", "-g"],
@@ -418,7 +347,7 @@ def launch_setup(context, *args, **kwargs):
         bridge_name="ros_gz_bridge",
         config_file=ros_gz_bridge_config_file,
         container_name="ros_gz_container",
-        create_own_container=ros_gz_bridge_create_own,
+        create_own_container="False",
         use_composition="True",
     )
 
@@ -492,7 +421,7 @@ def launch_setup(context, *args, **kwargs):
         delay_rviz_after_controller_stopped,
         aic_adapter,
         gz_ip_env,
-        gzserver_or_headless,
+        gzserver,
         gzgui,
         ros_gz_bridge,
         gz_spawn_entity,
@@ -637,13 +566,6 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument(
             "gazebo_gui", default_value="true", description="Start gazebo with GUI?"
-        )
-    )
-    declared_arguments.append(
-        DeclareLaunchArgument(
-            "headless_rendering",
-            default_value="false",
-            description="Use EGL headless rendering (no X display required)",
         )
     )
     declared_arguments.append(

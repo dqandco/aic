@@ -31,12 +31,11 @@ singularity pull aic_eval.sif docker://ghcr.io/intrinsic-dev/aic/aic_eval:latest
 ### 3. Run the evaluation container (headless)
 
 ```bash
-singularity run --nv aic_eval.sif ground_truth:=false start_aic_engine:=true gazebo_gui:=false launch_rviz:=false headless_rendering:=true
+singularity run --nv aic_eval.sif ground_truth:=false start_aic_engine:=true gazebo_gui:=false launch_rviz:=false
 ```
 
 - `--nv` — Enable NVIDIA GPU support (omit if no GPU)
 - `gazebo_gui:=false launch_rviz:=false` — Headless mode for HPC (no display required)
-- `headless_rendering:=true` — Enables EGL-based rendering for systems without an X display (required for camera sensors on headless/SSH sessions)
 
 ### 4. Run policy in a separate terminal
 
@@ -77,7 +76,7 @@ For the eval container and policy to communicate, they must run on the same node
 Omit the `--nv` flag when running Singularity:
 
 ```bash
-singularity run aic_eval.sif ground_truth:=false start_aic_engine:=true gazebo_gui:=false launch_rviz:=false headless_rendering:=true
+singularity run aic_eval.sif ground_truth:=false start_aic_engine:=true gazebo_gui:=false launch_rviz:=false
 ```
 
 ---
