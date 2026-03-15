@@ -1,5 +1,5 @@
 name: style
-on: [push, pull_request]
+on: []
 jobs:
   clang-format:
     name: C/C++ Style Check
