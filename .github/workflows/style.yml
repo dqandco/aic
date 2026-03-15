@@ -1,5 +1,5 @@
 name: style
-on: []
+on: [workflow_dispatch]
 jobs:
   clang-format:
     name: C/C++ Style Check
