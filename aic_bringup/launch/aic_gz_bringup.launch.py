@@ -383,7 +383,7 @@ def launch_setup(context, *args, **kwargs):
     delay_basic_controllers_after_spawn = RegisterEventHandler(
         event_handler=OnProcessExit(
             target_action=gz_spawn_entity,
-            on_exit=[joint_state_broadcaster_spawner, fts_broadcaster_spawner],
+            on_exit=[joint_state_broadcaster_spawner],
         )
     )
 
@@ -393,6 +393,7 @@ def launch_setup(context, *args, **kwargs):
             on_exit=[
                 initial_joint_controller_spawner_started,
                 initial_joint_controller_spawner_stopped,
+                fts_broadcaster_spawner,
             ],
         )
     )
