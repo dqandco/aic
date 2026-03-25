@@ -184,7 +184,7 @@ def launch_setup(context, *args, **kwargs):
             "--controller-manager",
             "/controller_manager",
             "--service-call-timeout",
-            "30",
+            "120",
         ],
     )
 
@@ -197,6 +197,8 @@ def launch_setup(context, *args, **kwargs):
             "--activate-as-group",
             "-c",
             "/controller_manager",
+            "--service-call-timeout",
+            "120",
         ],
         condition=IfCondition(activate_joint_controller),
     )
@@ -209,6 +211,8 @@ def launch_setup(context, *args, **kwargs):
             "-c",
             "/controller_manager",
             "--inactive",
+            "--service-call-timeout",
+            "120",
         ],
         condition=UnlessCondition(activate_joint_controller),
     )
@@ -221,7 +225,7 @@ def launch_setup(context, *args, **kwargs):
             "--controller-manager",
             "/controller_manager",
             "--service-call-timeout",
-            "30",
+            "120",
         ],
     )
 
