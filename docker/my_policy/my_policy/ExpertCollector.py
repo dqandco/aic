@@ -62,6 +62,13 @@ INSERTION_DEPTH = 0.015  # m
 POSITION_TOLERANCE = 0.003  # m – xy alignment tolerance before descent
 CONTROL_HZ = 4.0  # must match ACT inference rate
 
+# Collision recovery
+STALL_DISTANCE = 0.002  # m – if TCP moves less than this per step, it's stalled
+STALL_FORCE = 3.0  # N – minimum force magnitude to consider it a collision
+STALL_COUNT_TRIGGER = 3  # consecutive stalled steps before recovery
+RECOVERY_LIFT = 0.03  # m – how far to rise on each recovery
+RECOVERY_STEPS = 6  # control steps spent rising during recovery
+
 
 class ExpertCollector(Policy):
     """Ground-truth expert that outputs velocity twists for ACT training data."""
@@ -69,6 +76,8 @@ class ExpertCollector(Policy):
     def __init__(self, parent_node: Node):
         super().__init__(parent_node)
         self._task = None
+        self._prev_tcp_pos: np.ndarray | None = None
+        self._stall_count = 0
         self.get_logger().info("ExpertCollector initialized")
 
     # ------------------------------------------------------------------
@@ -137,6 +146,56 @@ class ExpertCollector(Policy):
         msg.wrench_feedback_gains_at_tip = [0.5, 0.5, 0.5, 0.0, 0.0, 0.0]
         msg.trajectory_generation_mode.mode = TrajectoryGenerationMode.MODE_VELOCITY
         move_robot(motion_update=msg)
+
+    # ------------------------------------------------------------------
+    # Collision detection
+    # ------------------------------------------------------------------
+
+    def _check_stall(self, tcp_tf, get_observation) -> bool:
+        """Return True if the arm appears stalled against an obstacle.
+
+        A stall is detected when the TCP barely moves between control
+        steps while the F/T sensor reads significant force.
+        """
+        tcp_pos = np.array([
+            tcp_tf.transform.translation.x,
+            tcp_tf.transform.translation.y,
+            tcp_tf.transform.translation.z,
+        ])
+
+        if self._prev_tcp_pos is None:
+            self._prev_tcp_pos = tcp_pos
+            self._stall_count = 0
+            return False
+
+        displacement = np.linalg.norm(tcp_pos - self._prev_tcp_pos)
+        self._prev_tcp_pos = tcp_pos
+
+        if displacement > STALL_DISTANCE:
+            self._stall_count = 0
+            return False
+
+        # TCP barely moved — check if there is force (i.e. pushing on something)
+        obs = get_observation()
+        if obs is not None and hasattr(obs, "wrist_wrench"):
+            w = obs.wrist_wrench
+            force_mag = math.sqrt(w.force.x ** 2 + w.force.y ** 2 + w.force.z ** 2)
+            if force_mag > STALL_FORCE:
+                self._stall_count += 1
+            else:
+                self._stall_count = 0
+        else:
+            self._stall_count += 1  # no sensor data — be cautious
+
+        if self._stall_count >= STALL_COUNT_TRIGGER:
+            self.get_logger().warn(
+                f"Stall detected (count={self._stall_count}, "
+                f"disp={displacement:.4f}m) — recovering by lifting"
+            )
+            self._stall_count = 0
+            return True
+
+        return False
 
     # ------------------------------------------------------------------
     # Proportional controller producing velocity commands
@@ -209,10 +268,16 @@ class ExpertCollector(Policy):
 
         # Proportional velocity with clamping
         lin_vel = LINEAR_GAIN * pos_error
-        speed = np.linalg.norm(lin_vel)
-        max_speed = APPROACH_SPEED if phase != "descend" else DESCENT_SPEED
-        if speed > max_speed:
-            lin_vel = lin_vel * (max_speed / speed)
+        if phase == "descend":
+            # Clamp z and xy independently so xy correction isn't starved
+            lin_vel[2] = np.clip(lin_vel[2], -DESCENT_SPEED, DESCENT_SPEED)
+            xy_speed = np.linalg.norm(lin_vel[:2])
+            if xy_speed > APPROACH_SPEED:
+                lin_vel[:2] *= APPROACH_SPEED / xy_speed
+        else:
+            speed = np.linalg.norm(lin_vel)
+            if speed > APPROACH_SPEED:
+                lin_vel = lin_vel * (APPROACH_SPEED / speed)
 
         # Clamp angular velocity
         ang_speed = np.linalg.norm(ang_vel)
@@ -253,9 +318,17 @@ class ExpertCollector(Policy):
                 send_feedback("Ground-truth TF not available")
                 return False
 
-        # ------- Phase 1: Approach and hover above port -------
+        # ------- Phase 1: Safe approach above port -------
+        # Sub-phases to avoid collisions with the task board:
+        #   1a "lift"      – rise straight up to safe clearance height
+        #   1b "translate"  – move laterally at safe height (no descent)
+        #   1c "lower"     – descend to hover height once xy-aligned
+        # If the arm stalls against an obstacle it lifts automatically.
         send_feedback("Expert: approaching port")
-        self.get_logger().info("Phase 1: approaching and aligning above port")
+        self.get_logger().info("Phase 1: safe approach above port")
+        self._prev_tcp_pos = None
+        self._stall_count = 0
+        recovery_steps_remaining = 0
 
         start = time.time()
         while time.time() - start < 25.0:
@@ -268,31 +341,68 @@ class ExpertCollector(Policy):
                 self.sleep_for(0.1)
                 continue
 
-            # Check if plug is aligned above port in xy
+            # --- Collision recovery: lift straight up ---
+            if recovery_steps_remaining > 0:
+                twist = self._make_twist(lz=APPROACH_SPEED)
+                self._send_twist(twist, move_robot)
+                recovery_steps_remaining -= 1
+                send_feedback(
+                    f"Expert: collision recovery, lifting "
+                    f"({recovery_steps_remaining} steps left)"
+                )
+                elapsed = time.time() - loop_start
+                time.sleep(max(0, 1.0 / CONTROL_HZ - elapsed))
+                continue
+
+            # --- Check for stall (collision) ---
+            if self._check_stall(tcp_tf, get_observation):
+                recovery_steps_remaining = RECOVERY_STEPS
+                send_feedback("Expert: stall detected, lifting to recover")
+                continue
+
             plug_pos = np.array([
                 plug_tf.transform.translation.x,
                 plug_tf.transform.translation.y,
+                plug_tf.transform.translation.z,
             ])
             port_pos = np.array([
                 port_tf.transform.translation.x,
                 port_tf.transform.translation.y,
+                port_tf.transform.translation.z,
             ])
-            xy_error = np.linalg.norm(plug_pos - port_pos)
 
-            twist = self._compute_approach_twist(tcp_tf, port_tf, plug_tf, "hover")
-            self._send_twist(twist, move_robot)
-            send_feedback(f"Expert: aligning, xy_err={xy_error:.4f}m")
+            safe_z = port_pos[2] + APPROACH_Z_OFFSET
+            xy_error = np.linalg.norm(plug_pos[:2] - port_pos[:2])
 
-            if xy_error < POSITION_TOLERANCE:
-                # Check z is near hover height
-                plug_z = plug_tf.transform.translation.z
-                port_z = port_tf.transform.translation.z
-                z_above = plug_z - port_z
+            if plug_pos[2] < safe_z - 0.005:
+                # 1a: Below safe height — rise straight up first
+                twist = self._make_twist(lz=APPROACH_SPEED)
+                send_feedback(f"Expert: lifting, dz={safe_z - plug_pos[2]:.3f}m")
+            elif xy_error > POSITION_TOLERANCE:
+                # 1b: At safe height but not aligned — translate only
+                twist = self._compute_approach_twist(
+                    tcp_tf, port_tf, plug_tf, "hover"
+                )
+                # Zero out z velocity to stay at current height
+                twist.linear.z = 0.0
+                send_feedback(f"Expert: translating, xy_err={xy_error:.4f}m")
+            else:
+                # 1c: Aligned in xy — lower to hover height
+                z_above = plug_pos[2] - port_pos[2]
                 if z_above < APPROACH_Z_OFFSET + 0.01:
                     self.get_logger().info(
-                        f"Aligned above port: xy_err={xy_error:.4f}m, z_above={z_above:.4f}m"
+                        f"Aligned above port: xy_err={xy_error:.4f}m, "
+                        f"z_above={z_above:.4f}m"
                     )
                     break
+                twist = self._compute_approach_twist(
+                    tcp_tf, port_tf, plug_tf, "hover"
+                )
+                send_feedback(
+                    f"Expert: lowering, z_above={z_above:.4f}m"
+                )
+
+            self._send_twist(twist, move_robot)
 
             elapsed = time.time() - loop_start
             time.sleep(max(0, 1.0 / CONTROL_HZ - elapsed))
