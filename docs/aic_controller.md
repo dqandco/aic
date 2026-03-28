@@ -1,6 +1,6 @@
 # aic_controller
 
-The [aic_controller](../aic_controller/) package is a controller for ROS 2. It receives target commands (either Joint or Cartesian) from a control policy or planner at $\approx 10 \to 30\text{ Hz}$ and bridges them to the robot hardware at $\approx 500\text{ Hz}$. The targets go through safety checks and smoothing before impedance control is applied.
+The [aic_controller](../aic_controller/) package is a controller for ROS 2. It receives target commands (either Joint or Cartesian) from a control policy or planner at approximately 10-30 Hz and bridges them to the robot hardware at approximately 500 Hz. The targets go through safety checks and smoothing before impedance control is applied.
 
 ## Architecture
 
@@ -28,32 +28,32 @@ A high-level overview of its architecture is provided in the following diagram:
 
 Cartesian targets are handled by `CartesianImpedanceAction` which calculates joint torques based on the difference between where the end-effector is and where it should be.
 
-$$
-\tau = \mathbf{J}^T \Big[ \mathbf{K}_p (\mathbf{x}_{des} - \mathbf{x}) + \mathbf{K}_d (\dot{\mathbf{x}}_{des} - \dot{\mathbf{x}}) + \mathbf{W}_f \Big] + \tau_{null}
-$$
+```text
+tau = J^T [Kp * (x_des - x) + Kd * (x_dot_des - x_dot) + Wf] + tau_null
+```
 
 **Where**:
-- $\tau \in \mathbb{R}^n$: Calculated joint torque.
-- $\mathbf{J} \in \mathbb{R}^{6 \times n}$: Jacobian matrix of the robot arm.
-- $\mathbf{K}_p, \mathbf{K}_d \in \mathbb{R}^{6 \times 6}$: Stiffness and damping matrices.
-- $\mathbf{x}_{des}, \mathbf{x} \in \mathbb{R}^6$: Target and current end-effector pose.
-- $\mathbf{W}_f \in \mathbb{R}^6$: Additional external force/torque.
-- $\tau_{null} \in \mathbb{R}^n$: Extra torque for secondary tasks like avoiding joint limits.
+- `tau in R^n`: Calculated joint torque.
+- `J in R^(6 x n)`: Jacobian matrix of the robot arm.
+- `Kp, Kd in R^(6 x 6)`: Stiffness and damping matrices.
+- `x_des, x in R^6`: Target and current end-effector pose.
+- `Wf in R^6`: Additional external force/torque.
+- `tau_null in R^n`: Extra torque for secondary tasks like avoiding joint limits.
 
 ### Joint Impedance Control
 
 Joint targets are handled by `JointImpedanceAction` which calculates joint torques based on the difference between target and current joint positions.
 
-$$
-\tau = \mathbf{K}_p (\mathbf{q}_{des} - \mathbf{q}) + \mathbf{K}_d (\dot{\mathbf{q}}_{des} - \dot{\mathbf{q}}) + \tau_f
-$$
+```text
+tau = Kp * (q_des - q) + Kd * (q_dot_des - q_dot) + tau_f
+```
 
 **Where**:
-- $\tau \in \mathbb{R}^n$: Calculated joint torque.
-- $\mathbf{K}_p, \mathbf{K}_d \in \mathbb{R}^n$: Stiffness and damping for each joint.
-- $\mathbf{q}_{des}, \mathbf{q} \in \mathbb{R}^n$: Target and current joint positions.
-- $\dot{\mathbf{q}}_{des}, \dot{\mathbf{q}} \in \mathbb{R}^n$: Target and current joint velocities.
-- $\tau_f \in \mathbb{R}^n$: Additional joint torque.
+- `tau in R^n`: Calculated joint torque.
+- `Kp, Kd in R^n`: Stiffness and damping for each joint.
+- `q_des, q in R^n`: Target and current joint positions.
+- `q_dot_des, q_dot in R^n`: Target and current joint velocities.
+- `tau_f in R^n`: Additional joint torque.
 
 
 ### ROS 2 Interfaces
