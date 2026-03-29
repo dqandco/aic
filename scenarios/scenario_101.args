@@ -1,0 +1,1 @@
+spawn_task_board:=true task_board_x:=0.1619 task_board_y:=-0.1788 task_board_z:=1.1276 task_board_roll:=0.0 task_board_pitch:=0.0 task_board_yaw:=3.7186 spawn_cable:=true cable_type:=sfp_sc_cable attach_cable_to_gripper:=true sc_mount_rail_1_present:=true sc_mount_rail_1_translation:=-0.01454 nic_card_mount_1_present:=true nic_card_mount_1_translation:=-0.03962

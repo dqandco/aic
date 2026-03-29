@@ -1,0 +1,168 @@
+Waiting for an action server to become available...
+Sending goal:
+     task:
+  id: scenario_009
+  cable_type: sfp_sc
+  cable_name: cable_0
+  plug_type: sc
+  plug_name: sc_tip
+  port_type: sc
+  port_name: sc_port_base
+  target_module_name: sc_port_0
+  time_limit: 60
+
+Goal accepted with ID: d7918256a64a400ba1f67db0d78702aa
+
+Feedback:
+    message: 'Expert: approaching port'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1486m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1512m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1521m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1509m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1484m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1455m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1425m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1396m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1368m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1343m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1319m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1295m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1275m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1257m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1237m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1220m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1200m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1176m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1153m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1132m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1111m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1094m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1079m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1066m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1054m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1041m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1026m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1010m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0995m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0980m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0965m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0948m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0930m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0914m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0898m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0883m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0870m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0856m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0843m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0828m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0814m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0799m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0787m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0774m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0763m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0753m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0745m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0737m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0729m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0721m'
+

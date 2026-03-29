@@ -1,0 +1,455 @@
+Waiting for an action server to become available...
+Sending goal:
+     task:
+  id: scenario_006
+  cable_type: sfp_sc
+  cable_name: cable_0
+  plug_type: sfp
+  plug_name: sfp_tip
+  port_type: sfp
+  port_name: sfp_port_0
+  target_module_name: nic_card_mount_4
+  time_limit: 60
+
+Goal accepted with ID: 80d6ab33b1ca4ff9bf9f72a151d02a95
+
+Feedback:
+    message: 'Expert: approaching port'
+
+Feedback:
+    message: 'Expert: lifting, dz=0.017m'
+
+Feedback:
+    message: 'Expert: lifting, dz=0.016m'
+
+Feedback:
+    message: 'Expert: lifting, dz=0.013m'
+
+Feedback:
+    message: 'Expert: lifting, dz=0.010m'
+
+Feedback:
+    message: 'Expert: lifting, dz=0.005m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1912m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1893m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1869m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1845m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1809m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1772m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1731m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1685m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1635m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1582m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1523m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1467m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1421m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1379m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1329m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1283m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1239m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1204m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1167m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1131m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1095m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1059m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.1024m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0990m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0951m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0917m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0878m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0838m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0798m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0758m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0725m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0690m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0649m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0611m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0576m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0539m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0498m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0463m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0423m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0383m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0344m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0306m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0271m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0239m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0201m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0171m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0141m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0115m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0095m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0078m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0063m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0056m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0048m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0044m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0040m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0036m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0033m'
+
+Feedback:
+    message: 'Expert: translating, xy_err=0.0030m'
+
+Feedback:
+    message: 'Expert: descending into port'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0980m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0978m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0968m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0955m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0938m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0922m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0909m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0897m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0883m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0867m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0855m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0840m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0827m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0816m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0800m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0782m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0763m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0751m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0737m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0724m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0710m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0698m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0687m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0673m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0660m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0645m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0632m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0618m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0605m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0592m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0577m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0563m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0548m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0534m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0519m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0506m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0490m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0475m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0458m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Feedback:
+    message: 'Expert: inserting, z_remaining=0.0457m'
+
+Result:
+    success: true
+message: ''
+
+Goal finished with status: SUCCEEDED
