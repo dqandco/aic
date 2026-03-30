@@ -1,0 +1,58 @@
+[INFO] [1774694620.026880557] [aic_model]: Loading policy module: my_policy.ExpertCollector
+[INFO] [1774694620.039615054] [aic_model]: Loaded policy module my_policy.ExpertCollector
+[INFO] [1774694620.040441198] [aic_model]: Using policy: ExpertCollector
+[INFO] [1774694625.238454095] [aic_model]: on_configure(LifecycleState(label='unconfigured', state_id=1))
+[INFO] [1774694625.240376954] [aic_model]: Instantiating policy...
+[INFO] [1774694625.250634609] [aic_model]: Policy.__init__()
+[INFO] [1774694625.254133434] [aic_model]: ExpertCollector initialized
+[INFO] [1774694627.446778267] [aic_model]: on_activate()
+[INFO] [1774694630.079666711] [aic_model]: Goal accepted
+[INFO] [1774694630.087497348] [aic_model]: Entering insert_cable_execute_callback()
+[INFO] [1774694630.093009592] [aic_model]: ExpertCollector.insert_cable() — Task: aic_task_interfaces.msg.Task(id='scenario_006', cable_type='sfp_sc', cable_name='cable_0', plug_type='sfp', plug_name='sfp_tip', port_type='sfp', port_name='sfp_port_0', target_module_name='nic_card_mount_4', time_limit=60)
+[INFO] [1774694630.094211784] [aic_model]: Phase 1: safe approach above port
+[INFO] [1774694630.095556706] [aic_model]: Setting cartesian mode...
+[INFO] [1774694630.099261248] [aic_model]: insert_cable execute loop
+[INFO] [1774694630.100126686] [aic_model]: Successfully set target mode
+[INFO] [1774694632.684647983] [aic_model]: insert_cable execute loop
+[INFO] [1774694635.152502346] [aic_model]: insert_cable execute loop
+[INFO] [1774694637.615904289] [aic_model]: insert_cable execute loop
+[INFO] [1774694640.188930483] [aic_model]: insert_cable execute loop
+[INFO] [1774694642.727627019] [aic_model]: insert_cable execute loop
+[INFO] [1774694645.177568530] [aic_model]: insert_cable execute loop
+[INFO] [1774694645.959812729] [aic_model]: Aligned above port: xy_err=0.0028m, z_above=0.0980m
+[INFO] [1774694645.960907489] [aic_model]: Phase 2: descending into port
+[INFO] [1774694647.669034229] [aic_model]: insert_cable execute loop
+[INFO] [1774694650.178964808] [aic_model]: insert_cable execute loop
+[INFO] [1774694652.681033131] [aic_model]: insert_cable execute loop
+[INFO] [1774694655.244000574] [aic_model]: insert_cable execute loop
+[INFO] [1774694657.796630814] [aic_model]: insert_cable execute loop
+[INFO] [1774694660.252203542] [aic_model]: insert_cable execute loop
+[INFO] [1774694662.808908450] [aic_model]: insert_cable execute loop
+[INFO] [1774694665.299122133] [aic_model]: insert_cable execute loop
+[INFO] [1774694667.827517151] [aic_model]: insert_cable execute loop
+[INFO] [1774694670.373915342] [aic_model]: insert_cable execute loop
+[INFO] [1774694671.137695441] [aic_model]: ExpertCollector.insert_cable() done
+[INFO] [1774694672.934390916] [aic_model]: insert_cable() returned True
+[ros2run]: Received signal:  Terminated
+reentrant call inside <_io.BufferedWriter name='<stdout>'>
+Exception in thread Thread-1 (run_func):
+Traceback (most recent call last):
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/tf2_ros/transform_listener.py", line 115, in run_func
+    self.executor.spin()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 374, in spin
+    self.spin_once()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 968, in spin_once
+    self._spin_once_impl(timeout_sec)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 951, in _spin_once_impl
+    handler, entity, node = self.wait_for_ready_callbacks(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 921, in wait_for_ready_callbacks
+    return next(self._cb_iter)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 827, in _wait_for_ready_callbacks
+    raise ExternalShutdownException()
+rclpy.executors.ExternalShutdownException
