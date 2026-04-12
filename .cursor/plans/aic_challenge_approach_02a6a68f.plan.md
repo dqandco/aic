@@ -4,7 +4,7 @@ overview: "Two-stage approach for the AIC cable insertion challenge: (1) behavio
 todos:
   - id: phase0-config-gen
     content: Build a config generator script that produces randomized YAML trial configs within documented limits (task board pose, NIC rail/translation/yaw, SC rail/translation, cable type, grasp perturbation)
-    status: pending
+    status: completed
   - id: phase0-data-harness
     content: "Build automated data collection harness: launch Gazebo with random config, run CheatCode, record Observation + MotionUpdate in LeRobot format with task metadata"
     status: pending
@@ -12,7 +12,7 @@ todos:
     content: Collect 3000-5000 expert demonstrations balanced across 3 task types (SFP port 0, SFP port 1, SC port)
     status: pending
   - id: phase1-task-embed
-    content: "Implement TaskEmbedding module: categorical (plug_type, port_name) -> nn.Embedding(3,32) -> MLP -> transformer token"
+    content: "Implement TaskEmbedding module: separate embeddings for plug_type (2), port_name (3), target_module_name (7) -> concat -> MLP -> transformer token"
     status: pending
   - id: phase1-act-modify
     content: Modify ACT architecture to accept task embedding token alongside image and state tokens in transformer encoder
@@ -52,7 +52,7 @@ Your two-stage idea (pretrain with BC, then RL with scoring-based rewards) is so
 
 - **BC pretraining** -- rather than manual teleoperation, use the `CheatCode` policy ([aic_example_policies/aic_example_policies/ros/CheatCode.py](aic_example_policies/aic_example_policies/ros/CheatCode.py)) to generate thousands of expert demonstrations automatically, recording the visual observations the learned policy will actually consume. This avoids the bottleneck of human teleoperation.
 - **RL fine-tuning** -- the scoring criteria translate directly into a dense shaped reward. Isaac Lab (GPU-parallelized) is the right place to run RL given your A100 access.
-- **Task conditioning** -- a small learned embedding of `(plug_type, port_name)` concatenated with proprioceptive state before the transformer encoder. This is sufficient given only 3 unique task types.
+- **Task conditioning** -- separate learned embeddings for `plug_type`, `port_name`, and `target_module_name`, concatenated and projected before the transformer encoder. This covers up to 12 unique task targets (5 NIC cards x 2 SFP ports + 2 SC mounts) and disambiguates which specific module to insert into when multiple are present.
 
 ---
 
@@ -63,7 +63,7 @@ flowchart LR
     subgraph inputs [Inputs]
         Cameras["3x Camera Images\n(downscaled 288x256)"]
         Proprio["Proprioception\n(joint pos, TCP pose,\nF/T, TCP error ~31D)"]
-        TaskEmb["Task Embedding\n(plug_type + port_name)"]
+        TaskEmb["Task Embedding\n(plug_type + port_name\n+ target_module_name)"]
     end
 
     subgraph model [ACT Transformer]
@@ -92,7 +92,7 @@ flowchart LR
 
 - 3 camera images downscaled from 1152x1024 to ~288x256 (0.25x, matching RunACT convention)
 - Proprioception vector (~31D): 6 joint positions, TCP position (3), TCP orientation quat (4), TCP linear velocity (3), TCP angular velocity (3), tcp_error (6), F/T wrench (6)
-- Task conditioning token: learned embedding from `(plug_type, port_name)` categorical
+- Task conditioning token: learned embedding from `(plug_type, port_name, target_module_name)` -- separate embeddings concatenated and projected
 
 ---
 
@@ -121,7 +121,7 @@ flowchart LR
   - Launches Gazebo with `ground_truth:=true` and the randomized config
   - Runs CheatCode via the `aic_engine` pipeline
   - Records the `Observation` messages (cameras, joints, F/T, controller state) and the `MotionUpdate` commands sent by CheatCode
-  - Saves to LeRobot HuggingFace dataset format with task metadata columns (`plug_type`, `port_name`)
+  - Saves to LeRobot HuggingFace dataset format with task metadata columns (`plug_type`, `port_name`, `target_module_name`)
   - Tears down and repeats
 3. **Data balance**: aim for roughly equal representation across the 3 task types:
   - SFP into SFP_PORT_0 (~1000-1500 demos)
@@ -140,10 +140,13 @@ flowchart LR
 
 Start from LeRobot's `ACTPolicy` ([lerobot.policies.act.modeling_act](https://github.com/huggingface/lerobot)) and modify:
 
-1. **Task conditioning**: Add a `TaskEmbedding` module:
-  - Input: categorical index for `(plug_type, port_name)` -- 3 unique values: `(sfp, sfp_port_0)`, `(sfp, sfp_port_1)`, `(sc, sc_port_base)`
-  - `nn.Embedding(3, 32)` projected through a small MLP to match transformer hidden dim
-  - Concatenated as an extra token to the transformer encoder input sequence (alongside image tokens and state tokens)
+1. **Task conditioning**: Add a `TaskEmbedding` module with separate embeddings per field:
+  - `plug_type`: `nn.Embedding(2, 16)` -- sfp or sc
+  - `port_name`: `nn.Embedding(3, 16)` -- sfp_port_0, sfp_port_1, sc_port_base
+  - `target_module_name`: `nn.Embedding(7, 16)` -- nic_card_mount_0..4, sc_port_0, sc_port_1
+  - Concatenated (48D) and projected through a small MLP to match transformer hidden dim
+  - Added as an extra token to the transformer encoder input sequence (alongside image tokens and state tokens)
+  - This covers up to 12 valid task targets and disambiguates which module to insert into when multiple NIC cards or SC mounts are present on the board
 2. **Image encoder**: ResNet-18 backbone (LeRobot ACT default), processing 3 cameras independently, each downscaled to 288x256. Each produces a spatial feature map that is flattened + projected to transformer tokens.
 3. **State encoder**: MLP that encodes the 31D proprioceptive vector into transformer hidden dim.
 4. **Action head**: Predict a chunk of `k=20` actions (6D delta TCP pose each), executed open-loop at ~10 Hz = 2 seconds of action per inference. Temporal ensembling across overlapping chunks for smoothness.
@@ -160,7 +163,7 @@ Start from LeRobot's `ACTPolicy` ([lerobot.policies.act.modeling_act](https://gi
 **Inference integration**: Create a new policy class (like `RunACT.py`) that:
 
 - Loads the trained model
-- Reads `task.plug_type` and `task.port_name` from the `Task` message to select the task embedding index
+- Reads `task.plug_type`, `task.port_name`, and `task.target_module_name` from the `Task` message to select the task embedding indices
 - Runs the ACT model on observations
 - Converts predicted delta TCP poses to absolute poses
 - Sends via `set_pose_target()` with `MODE_POSITION`
@@ -234,7 +237,7 @@ Key design choices:
 - Ensure the node:
   - Starts in `unconfigured` state, loads model on `configure` (within 60s timeout)
   - Accepts `/insert_cable` goals only in `active` state
-  - Reads `Task.plug_type` and `Task.port_name` for conditioning
+  - Reads `Task.plug_type`, `Task.port_name`, and `Task.target_module_name` for conditioning
   - Returns within `time_limit` (180s)
 - Build Docker image per [docs/submission.md](docs/submission.md)
 - Run full scoring test suite from [docs/scoring_tests.md](docs/scoring_tests.md) in the eval container
@@ -245,6 +248,6 @@ Key design choices:
 
 - **Sim-to-sim gap (Isaac Lab to Gazebo)**: Mitigate with cross-sim validation and physics randomization during RL. The docs explicitly encourage multi-simulator training.
 - **BC policy quality ceiling**: CheatCode demonstrations are near-optimal but may not cover failure recovery. RL fine-tuning addresses this by learning corrective behaviors.
-- **Task conditioning overfitting**: With only 3 task types, the embedding could overfit. Use dropout on the embedding and ensure balanced data.
+- **Task conditioning overfitting**: With up to 12 valid task targets (but likely fewer in practice), the embedding could overfit on underrepresented combinations. Use dropout on the embeddings, ensure balanced data across module positions, and the factored embedding design (separate per field) provides parameter sharing across related tasks.
 - **Inference latency**: ACT with 3 cameras on GPU should run well within the ~50ms budget at 20 Hz. Profile early on the target GPU.
 
