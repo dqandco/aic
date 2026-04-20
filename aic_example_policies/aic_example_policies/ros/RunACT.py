@@ -50,6 +50,14 @@ from lerobot.policies.act.configuration_act import ACTConfig
 from safetensors.torch import load_file
 from huggingface_hub import snapshot_download
 
+from aic_example_policies.task_conditioned_act import (
+    TaskConditionedACTConfig,
+    TaskConditionedACTPolicy,
+    encode_task_fields,
+    is_task_conditioned_act_config,
+    task_indices_to_batch,
+)
+
 
 class RunACT(Policy):
     def __init__(self, parent_node: Node):
@@ -72,13 +80,16 @@ class RunACT(Policy):
         # Load Config Manually (Fixes 'Draccus' error by removing unknown 'type' field)
         with open(policy_path / "config.json", "r") as f:
             config_dict = json.load(f)
+            self.task_conditioned = is_task_conditioned_act_config(config_dict)
             if "type" in config_dict:
                 del config_dict["type"]
 
-        config = draccus.decode(ACTConfig, config_dict)
+        config_class = TaskConditionedACTConfig if self.task_conditioned else ACTConfig
+        policy_class = TaskConditionedACTPolicy if self.task_conditioned else ACTPolicy
+        config = draccus.decode(config_class, config_dict)
 
         # Load Policy Architecture & Weights
-        self.policy = ACTPolicy(config)
+        self.policy = policy_class(config)
         model_weights_path = policy_path / "model.safetensors"
         self.policy.load_state_dict(load_file(model_weights_path))
         self.policy.eval()
@@ -234,6 +245,14 @@ class RunACT(Policy):
 
         return obs
 
+    def prepare_task_conditioning(self, task: Task) -> Dict[str, torch.Tensor]:
+        task_indices = encode_task_fields(
+            plug_type=task.plug_type,
+            port_name=task.port_name,
+            target_module_name=task.target_module_name,
+        )
+        return task_indices_to_batch(task_indices, self.device)
+
     def insert_cable(
         self,
         task: Task,
@@ -259,6 +278,8 @@ class RunACT(Policy):
                 continue
 
             obs_tensors = self.prepare_observations(observation_msg)
+            if self.task_conditioned:
+                obs_tensors.update(self.prepare_task_conditioning(task))
 
             # 2. Model Inference
             with torch.inference_mode():
