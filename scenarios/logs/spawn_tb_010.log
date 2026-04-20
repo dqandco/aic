@@ -1,0 +1,6 @@
+[INFO] [launch]: All log files can be found below /home/brandon/.ros/log/2026-03-28-02-58-13-754875-newrocky-212575
+[INFO] [launch]: Default logging verbosity is set to INFO
+[INFO] [create-1]: process started with pid [212602]
+[create-1] [INFO] [1774691894.161796721] [ros_gz_sim]: Requesting list of world names.
+[create-1] [INFO] [1774691894.581793954] [ros_gz_sim]: Entity creation successful.
+[INFO] [create-1]: process has finished cleanly [pid 212602]

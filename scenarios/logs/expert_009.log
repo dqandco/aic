@@ -1,0 +1,62 @@
+[INFO] [1774694924.590747772] [aic_model]: Loading policy module: my_policy.ExpertCollector
+[INFO] [1774694924.610138009] [aic_model]: Loaded policy module my_policy.ExpertCollector
+[INFO] [1774694924.610684117] [aic_model]: Using policy: ExpertCollector
+[INFO] [1774694929.809016678] [aic_model]: on_configure(LifecycleState(label='unconfigured', state_id=1))
+[INFO] [1774694929.811325054] [aic_model]: Instantiating policy...
+[INFO] [1774694929.820127798] [aic_model]: Policy.__init__()
+[INFO] [1774694929.821099187] [aic_model]: ExpertCollector initialized
+[INFO] [1774694931.792648904] [aic_model]: on_activate()
+[INFO] [1774694934.440122184] [aic_model]: Goal accepted
+[INFO] [1774694934.455221592] [aic_model]: Entering insert_cable_execute_callback()
+[INFO] [1774694934.485634111] [aic_model]: ExpertCollector.insert_cable() — Task: aic_task_interfaces.msg.Task(id='scenario_009', cable_type='sfp_sc', cable_name='cable_0', plug_type='sc', plug_name='sc_tip', port_type='sc', port_name='sc_port_base', target_module_name='sc_port_0', time_limit=60)
+[INFO] [1774694934.488353040] [aic_model]: insert_cable execute loop
+[INFO] [1774694934.495347939] [aic_model]: Phase 1: safe approach above port
+[INFO] [1774694934.497909642] [aic_model]: Setting cartesian mode...
+[INFO] [1774694934.508098395] [aic_model]: Successfully set target mode
+[INFO] [1774694936.962333320] [aic_model]: insert_cable execute loop
+[INFO] [1774694939.307584557] [aic_model]: insert_cable execute loop
+[INFO] [1774694941.678839001] [aic_model]: insert_cable execute loop
+[INFO] [1774694944.060528742] [aic_model]: insert_cable execute loop
+[INFO] [1774694946.444371456] [aic_model]: insert_cable execute loop
+[ros2run]: Received signal:  Terminated
+[ros2run]: Received signal:  Terminated
+Exception in thread Thread-1 (run_func):
+Traceback (most recent call last):
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/tf2_ros/transform_listener.py", line 115, in run_func
+    self.executor.spin()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 374, in spin
+    self.spin_once()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 968, in spin_once
+    self._spin_once_impl(timeout_sec)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 951, in _spin_once_impl
+    handler, entity, node = self.wait_for_ready_callbacks(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 921, in wait_for_ready_callbacks
+    return next(self._cb_iter)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 827, in _wait_for_ready_callbacks
+    raise ExternalShutdownException()
+rclpy.executors.ExternalShutdownException
+Exception in thread Thread-2 (action_thread_func):
+Traceback (most recent call last):
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/aic_model/aic_model.py", line 237, in action_thread_func
+    self._action_thread_result = self._policy.insert_cable(
+                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/my_policy/ExpertCollector.py", line 302, in insert_cable
+    send_feedback(f"Expert: translating, xy_err={xy_error:.4f}m")
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/aic_model/aic_model.py", line 243, in <lambda>
+    send_feedback=lambda feedback: self.send_feedback(goal_handle, feedback),
+                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/aic_model/aic_model.py", line 234, in send_feedback
+    goal_handle.publish_feedback(feedback_msg)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/action/server.py", line 202, in publish_feedback
+    self._action_server._handle.publish_feedback(feedback_message)
+rclpy._rclpy_pybind11.RCLError: Failed to publish feedback with an action server: feedback publisher is invalid, at /home/runner/conda-bld/bld/rattler-build_ros-kilted-rcl-action_1769484819/work/ros-kilted-rcl-action/src/work/src/rcl_action/action_server.c:1040

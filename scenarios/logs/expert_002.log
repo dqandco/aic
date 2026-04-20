@@ -1,0 +1,64 @@
+[INFO] [1774694199.354413798] [aic_model]: Loading policy module: my_policy.ExpertCollector
+[INFO] [1774694199.365649834] [aic_model]: Loaded policy module my_policy.ExpertCollector
+[INFO] [1774694199.366129837] [aic_model]: Using policy: ExpertCollector
+[INFO] [1774694204.775977643] [aic_model]: on_configure(LifecycleState(label='unconfigured', state_id=1))
+[INFO] [1774694204.778444926] [aic_model]: Instantiating policy...
+[INFO] [1774694204.791774933] [aic_model]: Policy.__init__()
+[INFO] [1774694204.796787707] [aic_model]: ExpertCollector initialized
+[INFO] [1774694206.647149822] [aic_model]: on_activate()
+[2m2026-03-28T10:36:48.879868Z[0m [31mERROR[0m rx-4 ThreadId(11) [2mzenoh::net::routing::dispatcher::pubsub[0m[2m:[0m Face{2, d2c0b2631c982262feb3bfcdc8e1231c} Undeclare unknown subscriber @/1ab1625849af18902874d1d7129ac7e/peer/config/**!
+[2m2026-03-28T10:36:48.879928Z[0m [31mERROR[0m rx-4 ThreadId(11) [2mzenoh::net::routing::dispatcher::queries[0m[2m:[0m Face{2, d2c0b2631c982262feb3bfcdc8e1231c} Undeclare unknown queryable 7 (@/1ab1625849af18902874d1d7129ac7e/peer/**)
+[INFO] [1774694208.979027729] [aic_model]: Goal accepted
+[INFO] [1774694209.024349193] [aic_model]: Entering insert_cable_execute_callback()
+[INFO] [1774694209.036625838] [aic_model]: ExpertCollector.insert_cable() — Task: aic_task_interfaces.msg.Task(id='scenario_002', cable_type='sfp_sc', cable_name='cable_0', plug_type='sc', plug_name='sc_tip', port_type='sc', port_name='sc_port_base', target_module_name='sc_port_0', time_limit=60)
+[INFO] [1774694209.040329418] [aic_model]: insert_cable execute loop
+[INFO] [1774694209.044471824] [aic_model]: Phase 1: safe approach above port
+[INFO] [1774694209.045844227] [aic_model]: Setting cartesian mode...
+[INFO] [1774694209.049536275] [aic_model]: Successfully set target mode
+[INFO] [1774694211.144592158] [aic_model]: insert_cable execute loop
+[INFO] [1774694213.272834227] [aic_model]: insert_cable execute loop
+[INFO] [1774694215.413872970] [aic_model]: insert_cable execute loop
+[INFO] [1774694217.538276585] [aic_model]: insert_cable execute loop
+[INFO] [1774694219.705692349] [aic_model]: insert_cable execute loop
+[INFO] [1774694221.900832619] [aic_model]: insert_cable execute loop
+[INFO] [1774694224.169003080] [aic_model]: insert_cable execute loop
+[INFO] [1774694226.455748009] [aic_model]: insert_cable execute loop
+[INFO] [1774694228.860892332] [aic_model]: insert_cable execute loop
+[INFO] [1774694231.221082243] [aic_model]: insert_cable execute loop
+[INFO] [1774694233.625209191] [aic_model]: insert_cable execute loop
+[INFO] [1774694234.174764103] [aic_model]: Phase 2: descending into port
+[INFO] [1774694235.962684694] [aic_model]: insert_cable execute loop
+[INFO] [1774694238.292094887] [aic_model]: insert_cable execute loop
+[INFO] [1774694240.644423964] [aic_model]: insert_cable execute loop
+[INFO] [1774694242.977259604] [aic_model]: insert_cable execute loop
+[INFO] [1774694245.308428087] [aic_model]: insert_cable execute loop
+[INFO] [1774694247.608254374] [aic_model]: insert_cable execute loop
+[INFO] [1774694249.843684489] [aic_model]: insert_cable execute loop
+[INFO] [1774694252.172953847] [aic_model]: insert_cable execute loop
+[INFO] [1774694254.568251310] [aic_model]: insert_cable execute loop
+[INFO] [1774694256.894660706] [aic_model]: insert_cable execute loop
+[INFO] [1774694259.043510228] [aic_model]: ExpertCollector.insert_cable() done
+[INFO] [1774694259.345595667] [aic_model]: insert_cable() returned True
+[ros2run]: Received signal:  Terminated
+[ros2run]: Received signal:  Terminated
+Exception in thread Thread-1 (run_func):
+Traceback (most recent call last):
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+    self._target(*self._args, **self._kwargs)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/tf2_ros/transform_listener.py", line 115, in run_func
+    self.executor.spin()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 374, in spin
+    self.spin_once()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 968, in spin_once
+    self._spin_once_impl(timeout_sec)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 951, in _spin_once_impl
+    handler, entity, node = self.wait_for_ready_callbacks(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 921, in wait_for_ready_callbacks
+    return next(self._cb_iter)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 827, in _wait_for_ready_callbacks
+    raise ExternalShutdownException()
+rclpy.executors.ExternalShutdownException

@@ -1,0 +1,79 @@
+[INFO] [1774691918.171354469] [aic_model]: Loading policy module: my_policy.ExpertCollector
+[INFO] [1774691918.193948516] [aic_model]: Loaded policy module my_policy.ExpertCollector
+[INFO] [1774691918.194682098] [aic_model]: Using policy: ExpertCollector
+[INFO] [1774691923.314471947] [aic_model]: on_configure(LifecycleState(label='unconfigured', state_id=1))
+[INFO] [1774691923.315053763] [aic_model]: Instantiating policy...
+[INFO] [1774691923.325201642] [aic_model]: Policy.__init__()
+[INFO] [1774691923.329059106] [aic_model]: ExpertCollector initialized
+[INFO] [1774691924.949343280] [aic_model]: on_activate()
+[INFO] [1774691927.213708824] [aic_model]: Goal accepted
+[INFO] [1774691927.221870523] [aic_model]: Entering insert_cable_execute_callback()
+[INFO] [1774691927.237538779] [aic_model]: ExpertCollector.insert_cable() — Task: aic_task_interfaces.msg.Task(id='scenario_010', cable_type='sfp_sc', cable_name='cable_0', plug_type='sfp', plug_name='sfp_tip', port_type='sfp', port_name='sfp_port_0', target_module_name='nic_card_mount_0', time_limit=60)
+[INFO] [1774691927.238970945] [aic_model]: insert_cable execute loop
+[INFO] [1774691927.240716182] [aic_model]: Phase 1: approaching and aligning above port
+[INFO] [1774691927.241511159] [aic_model]: Setting cartesian mode...
+[INFO] [1774691927.244737985] [aic_model]: Successfully set target mode
+[INFO] [1774691929.806260060] [aic_model]: insert_cable execute loop
+[INFO] [1774691932.359059458] [aic_model]: insert_cable execute loop
+[INFO] [1774691935.972328774] [aic_model]: insert_cable execute loop
+[INFO] [1774691938.539333192] [aic_model]: insert_cable execute loop
+[INFO] [1774691941.003863610] [aic_model]: insert_cable execute loop
+[INFO] [1774691943.448318202] [aic_model]: insert_cable execute loop
+[INFO] [1774691945.968387485] [aic_model]: insert_cable execute loop
+[INFO] [1774691946.040773987] [aic_model]: Aligned above port: xy_err=0.0028m, z_above=0.0964m
+[INFO] [1774691946.045095495] [aic_model]: Phase 2: descending into port
+[INFO] [1774691948.540036238] [aic_model]: insert_cable execute loop
+[INFO] [1774691951.099247070] [aic_model]: insert_cable execute loop
+[INFO] [1774691953.669508702] [aic_model]: insert_cable execute loop
+[INFO] [1774691956.350341843] [aic_model]: insert_cable execute loop
+[INFO] [1774691958.968697500] [aic_model]: insert_cable execute loop
+[INFO] [1774691961.550593170] [aic_model]: insert_cable execute loop
+[INFO] [1774691964.445570138] [aic_model]: insert_cable execute loop
+[INFO] [1774691967.113470525] [aic_model]: insert_cable execute loop
+[INFO] [1774691969.718484249] [aic_model]: insert_cable execute loop
+[INFO] [1774691971.312141420] [aic_model]: ExpertCollector.insert_cable() done
+[INFO] [1774691972.311044842] [aic_model]: insert_cable() returned True
+[ros2run]: Received signal:  Terminated
+[ros2run]: Received signal:  Terminated
+Traceback (most recent call last):
+Exception in thread Thread-1 (run_func):
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/aic_model/aic_model", line 33, in <module>
+Traceback (most recent call last):
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/threading.py", line 1075, in _bootstrap_inner
+    self.run()
+    sys.exit(load_entry_point('aic_model==0.0.1', 'console_scripts', 'aic_model')())
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/threading.py", line 1012, in run
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/aic_model/aic_model.py", line 329, in main
+    self._target(*self._args, **self._kwargs)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/tf2_ros/transform_listener.py", line 115, in run_func
+    executor.spin()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 374, in spin
+    self.executor.spin()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 374, in spin
+    self.spin_once()
+    self.spin_once()
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 1047, in spin_once
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 968, in spin_once
+    self._spin_once_impl(timeout_sec)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 1026, in _spin_once_impl
+    self._spin_once_impl(timeout_sec)
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 951, in _spin_once_impl
+    handler, entity, node = self.wait_for_ready_callbacks(
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 921, in wait_for_ready_callbacks
+    handler, entity, node = self.wait_for_ready_callbacks(
+    return next(self._cb_iter)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 921, in wait_for_ready_callbacks
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 827, in _wait_for_ready_callbacks
+    return next(self._cb_iter)
+           ^^^^^^^^^^^^^^^^^^^
+  File "/home/brandon/ws_aic/src/aic/.pixi/envs/default/lib/python3.12/site-packages/rclpy/executors.py", line 799, in _wait_for_ready_callbacks
+    raise ExternalShutdownException()
+rclpy.executors.ExternalShutdownException
+    wait_set = _rclpy.WaitSet(
+               ^^^^^^^^^^^^^^^
+rclpy._rclpy_pybind11.RCLError: failed to initialize wait set: the given context is not valid, either rcl_init() was not called or rcl_shutdown() was called., at /home/runner/conda-bld/bld/rattler-build_ros-kilted-rcl_1769484624/work/ros-kilted-rcl/src/work/src/rcl/wait.c:105
+[ros2run]: Process exited with failure 1
