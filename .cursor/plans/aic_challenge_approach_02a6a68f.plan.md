@@ -1,6 +1,6 @@
 ---
 name: AIC Challenge Approach
-overview: "Two-stage approach for the AIC cable insertion challenge: (1) behavior cloning on automated CheatCode-generated expert demonstrations with task conditioning, then (2) RL fine-tuning with shaped rewards derived from the scoring criteria. Uses ACT as the base architecture, Gazebo/MuJoCo for data collection, and Isaac Lab for parallelized RL."
+overview: "Two-stage approach for the AIC cable insertion challenge: (1) behavior cloning on automated CheatCode-generated expert demonstrations with task conditioning, then (2) RL fine-tuning with shaped rewards derived from the scoring criteria. Current implementation focus: task-conditioned ACT architecture first, with large-scale data collection deferred until the model path is in place."
 todos:
   - id: phase0-config-gen
     content: Build a config generator script that produces randomized YAML trial configs within documented limits (task board pose, NIC rail/translation/yaw, SC rail/translation, cable type, grasp perturbation)
@@ -13,10 +13,10 @@ todos:
     status: pending
   - id: phase1-task-embed
     content: "Implement TaskEmbedding module: separate embeddings for plug_type (2), port_name (3), target_module_name (7) -> concat -> MLP -> transformer token"
-    status: pending
+    status: completed
   - id: phase1-act-modify
     content: Modify ACT architecture to accept task embedding token alongside image and state tokens in transformer encoder
-    status: pending
+    status: completed
   - id: phase1-train
     content: Train task-conditioned ACT on expert demonstrations (L1 + KL loss, AdamW, 500 epochs, batch 64)
     status: pending
@@ -99,6 +99,8 @@ flowchart LR
 ## Phase 0: Automated Expert Data Collection
 
 **Goal**: Generate 3000-5000+ successful insertion demonstrations across randomized task board configurations, covering all three task types.
+
+**Implementation note**: defer most of this phase for now. The immediate priority is the task-conditioned ACT model path, so Phase 0 should stay minimal until we are ready to train end to end.
 
 **Strategy**: Build a harness that programmatically launches Gazebo with randomized configs, runs `CheatCode` to execute the insertion, and records the observations + actions in LeRobot dataset format.
 
