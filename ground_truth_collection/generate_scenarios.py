@@ -162,7 +162,7 @@ def make_mount_rail(mount_type: str, idx: int, present: bool, name_suffix: Optio
             "translation": rand_in(MOUNT_RAIL_LIMITS.min_translation, MOUNT_RAIL_LIMITS.max_translation),
             "roll": 0.0,
             "pitch": 0.0,
-            "yaw": 0.0,
+            "yaw": round(random.uniform(*MOUNT_YAW_LIMITS), 4),
         },
     }
 
@@ -186,26 +186,26 @@ def generate_sfp_trial(trial_idx: int) -> dict:
         nic_rails[f"nic_rail_{i}"] = make_nic_rail(nic_name_counter, present)
         if present:
             if i == target_nic_rail:
-                target_nic_name = f"nic_card_mount_{nic_name_counter}"
+                # Frame name is tied to rail index, not the entity_name counter.
+                target_nic_name = f"nic_card_mount_{i}"
             nic_name_counter += 1
 
-    # SC ports — random presence
+    # SC ports — random presence. Entity name uses rail index so that sc_rail_N
+    # -> "sc_mount_N"; pick-location SC mounts are offset by NUM_SC_RAILS to avoid
+    # colliding on the same name.
     sc_rails = {}
-    sc_counter = 0
     for i in range(NUM_SC_RAILS):
         present = random.random() < 0.5
-        sc_rails[f"sc_rail_{i}"] = make_sc_rail(i, present, name_suffix=sc_counter)
-        if present:
-            sc_counter += 1
+        sc_rails[f"sc_rail_{i}"] = make_sc_rail(i, present)
 
     # Mount rails — at least the sfp mount should exist for the pick location
     mount_rails = {
         "lc_mount_rail_0": make_mount_rail("lc", 0, random.random() < 0.6),
         "sfp_mount_rail_0": make_mount_rail("sfp", 0, True),
-        "sc_mount_rail_0": make_mount_rail("sc", 0, random.random() < 0.5),
+        "sc_mount_rail_0": make_mount_rail("sc", 0, random.random() < 0.5, name_suffix=NUM_SC_RAILS + 0),
         "lc_mount_rail_1": make_mount_rail("lc", 1, random.random() < 0.5),
         "sfp_mount_rail_1": make_mount_rail("sfp", 1, random.random() < 0.3, name_suffix=1),
-        "sc_mount_rail_1": make_mount_rail("sc", 1, random.random() < 0.3, name_suffix=1),
+        "sc_mount_rail_1": make_mount_rail("sc", 1, random.random() < 0.3, name_suffix=NUM_SC_RAILS + 1),
     }
 
     # Target SFP port: either port 0 or port 1 on the NIC card
@@ -264,26 +264,24 @@ def generate_sc_trial(trial_idx: int) -> dict:
         if present:
             nic_counter += 1
 
-    # SC rails
+    # SC rails. Entity name uses rail index (sc_rail_N -> "sc_mount_N");
+    # pick-location SC mounts are offset by NUM_SC_RAILS to avoid name collision.
     sc_rails = {}
-    sc_counter = 0
     target_sc_name = None
     for i in range(NUM_SC_RAILS):
         present = (i == target_sc_rail) or (random.random() < 0.4)
-        sc_rails[f"sc_rail_{i}"] = make_sc_rail(i, present, name_suffix=sc_counter)
-        if present:
-            if i == target_sc_rail:
-                target_sc_name = f"sc_port_{sc_counter}"
-            sc_counter += 1
+        sc_rails[f"sc_rail_{i}"] = make_sc_rail(i, present)
+        if present and i == target_sc_rail:
+            target_sc_name = f"sc_port_{i}"
 
     # Mount rails
     mount_rails = {
         "lc_mount_rail_0": make_mount_rail("lc", 0, random.random() < 0.5),
         "sfp_mount_rail_0": make_mount_rail("sfp", 0, random.random() < 0.6),
-        "sc_mount_rail_0": make_mount_rail("sc", 0, True),
+        "sc_mount_rail_0": make_mount_rail("sc", 0, True, name_suffix=NUM_SC_RAILS + 0),
         "lc_mount_rail_1": make_mount_rail("lc", 1, random.random() < 0.5),
         "sfp_mount_rail_1": make_mount_rail("sfp", 1, random.random() < 0.3, name_suffix=1),
-        "sc_mount_rail_1": make_mount_rail("sc", 1, random.random() < 0.3, name_suffix=1),
+        "sc_mount_rail_1": make_mount_rail("sc", 1, random.random() < 0.3, name_suffix=NUM_SC_RAILS + 1),
     }
 
     # Cable — reversed so SC plug end is grasped
