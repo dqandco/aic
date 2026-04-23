@@ -23,6 +23,7 @@ import argparse
 import json
 import logging
 import os
+import re
 import shutil
 import signal
 import subprocess
@@ -41,7 +42,7 @@ from lerobot.datasets.pipeline_features import (
     aggregate_pipeline_dataset_features,
     create_initial_features,
 )
-from lerobot.datasets.utils import build_dataset_frame, combine_feature_dicts
+from lerobot.datasets.feature_utils import build_dataset_frame, combine_feature_dicts
 from lerobot.datasets.video_utils import VideoEncodingManager
 from lerobot.processor import make_default_processors
 from lerobot.utils.constants import ACTION, OBS_STR
@@ -130,6 +131,55 @@ def kill_process_group(proc: subprocess.Popen | None, timeout: int = 5):
             pass
 
 
+_PID_RE = re.compile(r"pid=(\d+)")
+
+
+def _preflight_port_cleanup(port: int):
+    """Kill any rmw_zenohd zombie holding ``port``; abort if some other process holds it.
+
+    Zenoh routers from prior runs can survive worker death (e.g. SIGKILL before
+    the worker's ``finally`` block runs). This clears them so we can bind.
+    """
+    try:
+        result = subprocess.run(
+            ["ss", "-tlnpH"],
+            capture_output=True, text=True, check=False, timeout=5,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired) as e:
+        log.warning("Skipping preflight port check (%s).", e)
+        return
+
+    port_tok = f":{port} "
+    killed = False
+    others: list[str] = []
+    for line in result.stdout.splitlines():
+        if port_tok not in line:
+            continue
+        if "rmw_zenohd" in line:
+            for m in _PID_RE.finditer(line):
+                pid = int(m.group(1))
+                log.warning(
+                    "Port %d: killing zombie rmw_zenohd (pid=%d).", port, pid,
+                )
+                try:
+                    os.kill(pid, signal.SIGKILL)
+                    killed = True
+                except (ProcessLookupError, PermissionError) as e:
+                    log.warning("Failed to kill pid %d: %s", pid, e)
+        else:
+            others.append(line.strip())
+
+    if others:
+        log.error(
+            "Port %d is held by non-zenoh process(es); aborting:\n  %s",
+            port, "\n  ".join(others),
+        )
+        sys.exit(1)
+
+    if killed:
+        time.sleep(1)  # let the kernel release the port
+
+
 def setup_worker_env(
     worker_id: int, zenoh_port: int, gz_partition: str | None, log_dir: Path,
 ) -> subprocess.Popen:
@@ -142,6 +192,8 @@ def setup_worker_env(
         "Worker %d: isolating environment (zenoh port %d, gz partition %s).",
         worker_id, zenoh_port, gz_partition or "default",
     )
+
+    _preflight_port_cleanup(zenoh_port)
 
     os.environ["RMW_IMPLEMENTATION"] = "rmw_zenoh_cpp"
     os.environ["ZENOH_ROUTER_CONFIG_URI"] = ZENOH_CONFIG_PATH
