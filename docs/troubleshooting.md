@@ -92,3 +92,104 @@ By default, distrobox uses podman but we are using docker in our setup. Make sur
 ```bash
 export DBX_CONTAINER_MANAGER=docker
 ```
+
+## Stuck simulator processes ("multiple arms in Gazebo", "Another world of the same name is running", `aic_engine`: "Failed to find a valid clock")
+
+If a previous `entrypoint.sh` was killed with `Ctrl+C`, gz often refuses to die — `gz sim` ignores `SIGTERM` for ~15 s and the actual world is hosted *inside* `component_container` (loaded as a composable node), which `pkill -f "gz sim"` does not match. As a result, the next `entrypoint.sh` cheerfully starts a second simulator alongside the zombie one, you see multiple arms in Gazebo, and `aic_engine` gives up with `Failed to find a valid clock` because two different `/clock` publishers are now fighting on the bus.
+
+Symptoms:
+- More than one robot arm in the Gazebo viewer
+- `aic_engine` log ends with `Failed to find a valid clock` followed by `Engine failed to initialize`
+- `[component_container-3] (...) [error] [SimulationRunner.cc:207] Another world of the same name is running` in the entrypoint log
+- `run_gazebo_act_episode.py` returns `failure_reason: "aic_engine completed without producing scoring.yaml."`
+
+Use the bundled cleanup script to kill **everything** the eval stack tends to leak (host-side ROS nodes, the in-container `component_container` / `gz_server` / `controller_manager` / `rmw_zenohd`, and orphan `podman` `conmon` processes whose container has already been deleted):
+
+```bash
+# Inspect what's still alive (exits non-zero if there is anything to kill).
+docker/my_policy/scripts/clean_sim.sh --check
+
+# Actually clean it up.
+docker/my_policy/scripts/clean_sim.sh
+
+# Same as above but also `docker restart aic_eval` — kicks any open
+# `distrobox enter` shell, but guarantees a fresh container PID 1.
+docker/my_policy/scripts/clean_sim.sh --hard
+```
+
+Once `--check` reports `host=0, container=0, conmon=0`, re-run `entrypoint.sh` in your `aic_eval` shell **before** launching another episode:
+
+```bash
+distrobox enter aic_eval
+/entrypoint.sh ground_truth:=false start_aic_engine:=false
+```
+
+`run_gazebo_act_episode.py` and `train_gazebo_residual_act.py` now also fail fast (in ~5 s) with the message `No running sim detected (...)` instead of waiting for `aic_engine` to time out, so if you forget to start the entrypoint you'll get a clear error pointing back here.
+
+## `aic_engine`: "Failed to find a valid clock" with a healthy sim (RMW mismatch)
+
+Symptoms — a single, clean simulator is running (so the multi-arm / `Another world` advice above does not apply), `clean_sim.sh --check` reports `host=0, container=0, conmon=0` after you `Ctrl+C` everything, but `run_gazebo_act_episode.py` still fails after ~17–20 s with:
+
+```
+"failure_reason": "aic_engine completed without producing scoring.yaml.",
+"engine_return_code": 1,
+```
+
+and `outputs/<run>/logs/aic_engine.log` ends with:
+
+```
+[INFO] [aic_engine]: Waiting for clock
+[ERROR] [aic_engine]: Failed to find a valid clock
+[ERROR] [aic_engine]: Engine failed to initialize
+```
+
+Cause: `/entrypoint.sh` exports `RMW_IMPLEMENTATION=rmw_zenoh_cpp` only inside *its own* process tree, so a fresh `distrobox enter aic_eval -- bash -lc 'source setup.bash && ros2 run aic_engine ...'` shell falls back to the default RMW (FastDDS) and cannot see `/clock` (or any other topic) the sim is publishing over Zenoh. You can confirm by running, inside the container:
+
+```bash
+docker exec aic_eval bash -lc 'source /ws_aic/install/setup.bash && \
+  ros2 service list | grep gz_server'      # empty == default RMW, broken
+docker exec aic_eval bash -lc 'source /ws_aic/install/setup.bash && \
+  export RMW_IMPLEMENTATION=rmw_zenoh_cpp && ros2 service list | grep gz_server'
+                                            # 18 services == sim is fine
+```
+
+The runner now exports `RMW_IMPLEMENTATION=rmw_zenoh_cpp` and `ZENOH_ROUTER_CONFIG_URI=/aic_zenoh_config.json5` for the `aic_engine` command, and a second preflight check verifies `/clock` actually has a publisher visible from inside the container before launching the engine. If you ever hit this manually (e.g. running `aic_engine` by hand in a one-off shell), make sure to set both env vars first.
+
+## `aic_engine`: "Participant model is not ready" / `aic_engine exited with a non-zero return code`
+
+Symptoms — the engine *did* find the clock and started trial 1, then bailed out almost immediately:
+
+```
+"failure_reason": "aic_engine exited with a non-zero return code.",
+"total_score": 0.0,
+"score_lines": [
+    "trial_1: total=0.000 (tier1=0.000, tier2=0.000, tier3=0.000)"
+]
+```
+
+`outputs/<run>/logs/aic_engine.log`:
+
+```
+[INFO]  Service '/aic_model/get_state' is available. Participant model discovered.
+[INFO]  Lifecycle node 'aic_model' is available. Checking if it is in 'unconfigured' state...
+[ERROR] GetState service call timed out for node 'aic_model'
+[ERROR]   ✗ Participant model is not ready for trial 'trial_1'
+```
+
+`outputs/<run>/logs/aic_model.log`:
+
+```
+[INFO] aic_model: Loading policy module: my_policy.ResidualACT
+... 28 seconds later ...
+[INFO] aic_model: Loaded policy module my_policy.ResidualACT
+```
+
+Cause: `aic_engine` only waits 5 s for `/aic_model/get_state` to answer before declaring the participant unready and aborting the trial. ResidualACT (and any policy that imports PyTorch + loads a checkpoint synchronously in `__init__`) routinely takes 25–35 s to construct, during which the lifecycle service is *advertised* on the ROS graph but the rclpy executor is busy and never dispatches the request.
+
+The runner now polls `/aic_model/get_state` itself (with a generous default timeout of 90 s — see `EpisodeSpec.model_ready_timeout`) before launching the engine, so the engine only ever sees a fully-spun-up model. If your policy takes longer than 90 s to construct, bump the timeout:
+
+```python
+EpisodeSpec(..., model_ready_timeout=180.0)
+```
+
+If you hit `aic_model did not answer /aic_model/get_state within Ns` instead of the engine error, the policy is either still loading (raise the timeout) or it crashed during import (check `aic_model.log` for a Python traceback).

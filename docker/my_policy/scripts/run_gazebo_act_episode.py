@@ -46,14 +46,23 @@ def parse_args() -> argparse.Namespace:
         help="Maximum wall-clock seconds for one episode.",
     )
     parser.add_argument(
-        "--inside-eval-container",
-        action="store_true",
-        help="Run eval-side commands directly in the current shell instead of via distrobox enter.",
+        "--no-use-existing-sim",
+        dest="use_existing_sim",
+        action="store_false",
+        help="Launch a fresh Gazebo sim instead of assuming one is already running.",
+    )
+    parser.set_defaults(use_existing_sim=True)
+    parser.add_argument(
+        "--episode-retries",
+        type=int,
+        default=0,
+        help="Retry transient infrastructure failures this many times.",
     )
     parser.add_argument(
-        "--use-existing-sim",
-        action="store_true",
-        help="Assume the Gazebo eval environment is already running and skip launching /entrypoint.sh.",
+        "--retry-backoff-s",
+        type=float,
+        default=3.0,
+        help="Sleep between retry attempts in seconds.",
     )
     parser.add_argument(
         "--act-model-repo",
@@ -73,6 +82,17 @@ def parse_args() -> argparse.Namespace:
         default=float(os.environ.get("ACT_ADAPTER_SCALE", "1.0")),
         help="Global multiplier applied to the residual adapter output.",
     )
+    parser.add_argument(
+        "--distrobox-root",
+        dest="distrobox_use_root",
+        choices=["auto", "true", "false"],
+        default="auto",
+        help=(
+            "Whether to pass '-r' to 'distrobox enter'. 'auto' (default) "
+            "tries without '-r' first and only falls back to '-r' if that "
+            "fails — recommended unless your Docker really requires sudo."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -85,6 +105,10 @@ def main() -> int:
     if args.adapter_path is not None:
         model_env["ACT_ADAPTER_PATH"] = str(args.adapter_path.resolve())
 
+    distrobox_use_root = {"auto": None, "true": True, "false": False}[
+        args.distrobox_use_root
+    ]
+
     spec = EpisodeSpec(
         config_path=args.config.resolve(),
         results_dir=args.results_dir.resolve(),
@@ -92,10 +116,12 @@ def main() -> int:
         ground_truth=args.ground_truth,
         episode_timeout=args.episode_timeout,
         eval_container=args.eval_container,
-        inside_eval_container=args.inside_eval_container,
         use_existing_sim=args.use_existing_sim,
+        retries=args.episode_retries,
+        retry_backoff_s=args.retry_backoff_s,
         model_env=model_env,
         reward_weights=RewardWeights(),
+        distrobox_use_root=distrobox_use_root,
     )
 
     runner = GazeboEpisodeRunner()
@@ -105,6 +131,8 @@ def main() -> int:
         "success": result.success,
         "reward": result.reward,
         "elapsed_s": result.elapsed_s,
+        "attempts": result.attempts,
+        "retryable": result.retryable,
         "failure_reason": result.failure_reason,
         "engine_return_code": result.engine_return_code,
         "model_return_code": result.model_return_code,
