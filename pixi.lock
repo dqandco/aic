@@ -473,6 +473,8 @@ environments:
         build: hb0f4dca_0
       - conda: aic_utils/aic_teleoperation
         build: hb0f4dca_0
+      - conda: aic_utils/aic_training_interfaces
+        build: hb0f4dca_0
       - conda: aic_utils/lerobot_robot_aic
         build: hb0f4dca_0
       - conda: docker/my_policy
@@ -970,6 +972,8 @@ environments:
       - conda: aic_model
         build: h60d57d3_0
       - conda: aic_utils/aic_teleoperation
+        build: h60d57d3_0
+      - conda: aic_utils/aic_training_interfaces
         build: h60d57d3_0
       - conda: aic_utils/lerobot_robot_aic
         build: h60d57d3_0
@@ -8165,6 +8169,41 @@ packages:
 - conda: https://conda.anaconda.org/robostack-kilted/linux-64/ros-kilted-ament-cmake-2.7.4-np2py312h2ed9cc7_15.conda
   sha256: 04d2c3366ffca89ad11ea4c2ace80875007da2558bff58116c9e94efb44bf752
   md5: 46da3fd3ab5893835d82f97182386e03
+- conda: aic_utils/aic_training_interfaces
+  name: ros-kilted-aic-training-interfaces
+  version: 0.0.1
+  build: h60d57d3_0
+  subdir: osx-arm64
+  variants:
+    target_platform: osx-arm64
+  depends:
+  - ros-kilted-rosidl-default-runtime
+  - ros2-distro-mutex
+  - ros2-distro-mutex >=0.14.0,<0.15.0a0
+  - libcxx >=22
+  - python_abi 3.12.* *_cp312
+  - numpy >=1.23,<3
+  license: LicenseRef-Apache-2.0
+- conda: aic_utils/aic_training_interfaces
+  name: ros-kilted-aic-training-interfaces
+  version: 0.0.1
+  build: hb0f4dca_0
+  subdir: linux-64
+  variants:
+    target_platform: linux-64
+  depends:
+  - ros-kilted-rosidl-default-runtime
+  - ros2-distro-mutex
+  - ros2-distro-mutex >=0.14.0,<0.15.0a0
+  - libgcc >=15
+  - libgcc >=15
+  - libstdcxx >=15
+  - python_abi 3.12.* *_cp312
+  - numpy >=1.23,<3
+  license: LicenseRef-Apache-2.0
+- conda: https://conda.anaconda.org/robostack-kilted/linux-64/ros-kilted-ament-cmake-2.7.5-np2py312h2ed9cc7_17.conda
+  sha256: 5d00da6dfcac81ff634b3be1dd9753107a0c0e1d5171698b1e65a8e6831706f0
+  md5: 21fc4d9b28df527df4537168a6a992aa
   depends:
   - python
   - ros-kilted-ament-cmake-core
